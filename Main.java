@@ -13,7 +13,8 @@ public class Main {
                 Graph shortestPath = CrabPathAlgorithm.findShortestPath();
                 if (shortestPath == null) {
                     System.out.println("No path has been found for this table.");
-                    return;
+                    System.out.println("\n");
+                    continue;
                 }
 
                 System.out.println("Path Found!");

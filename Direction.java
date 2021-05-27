@@ -6,7 +6,7 @@ public class Direction {
     public Direction(DirectionValuesEnum direction) {
         this.direction = direction;
 
-        switch(direction) {
+        switch (direction) {
             case up:
                 this.position = new Position(0, -1); // Go back a value in the matrix
                 this.movementTimes = 2;

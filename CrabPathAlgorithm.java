@@ -11,18 +11,18 @@ public class CrabPathAlgorithm {
         Position crabPosition = TableValues.crabPosition;
         Position exitPosition = TableValues.exitPosition;
 
-        boolean[][] hasBeenDiscovered = new boolean[tableSize.getWidth() + 1][tableSize.getHeight() + 1];
+        boolean[][] hasBeenDiscovered = new boolean[tableSize.getWidth()][tableSize.getHeight()];
         hasBeenDiscovered[crabPosition.getDirX()][crabPosition.getDirY()] = true;
 
         Queue<Graph> queue = new ArrayDeque<>();
-        queue.add(new Graph(crabPosition, null, null));
+        queue.add(new Graph(crabPosition, null));
 
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             Graph graph = queue.poll();
 
             // Search in each direction once
-            // In case of up-left-right-down two times
-            for(DirectionValuesEnum directionValue: DirectionValuesEnum.values()) {                
+            // In case of up-left-right-down, it searchs two times
+            for (DirectionValuesEnum directionValue : DirectionValuesEnum.values()) {
                 Direction dir = new Direction(directionValue);
 
                 int nextX = graph.getPosition().getDirX() + dir.getPosition().getDirX();
@@ -37,30 +37,32 @@ public class CrabPathAlgorithm {
                     continue;
                 }
 
-                Direction nextDirection = graph.getFirstDir() != null ? graph.getFirstDir() : dir;
-                
-                if(nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
-                    return graph;
+                Graph nextGraph = new Graph(new Position(nextX, nextY), graph);
+
+                if (nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
+                    return nextGraph;
                 }
 
                 // Next movement
-                if(dir.getMovementTimes() == 2) {
+                if (dir.getMovementTimes() == 2) {
                     nextX += dir.getPosition().getDirX();
                     nextY += dir.getPosition().getDirY();
+
+                    nextGraph = new Graph(new Position(nextX, nextY), graph);
 
                     if (nextX >= tableSize.getWidth() || nextY >= tableSize.getHeight() || nextX < 0 || nextY < 0) {
                         continue;
                     }
 
-                    if(nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
-                        return graph;
+                    if (nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
+                        return nextGraph;
                     }
                 }
 
                 // Enqueue if not discovered
-                if(!hasBeenDiscovered[nextX][nextY]) {
+                if (!hasBeenDiscovered[nextX][nextY]) {
                     hasBeenDiscovered[nextX][nextY] = true;
-                    queue.add(new Graph(new Position(nextX, nextY), nextDirection, graph));
+                    queue.add(nextGraph);
                 }
             }
         }
