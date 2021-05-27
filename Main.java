@@ -12,19 +12,19 @@ public class Main {
 
                 Graph shortestPath = CrabPathAlgorithm.findShortestPath();
                 if (shortestPath == null) {
-                    System.out.println("No path has been found for this table.");
+                    System.out.println("No path for the exit has been found for this table.");
                     System.out.println("\n");
                     continue;
                 }
 
                 System.out.println("Path Found!");
                 int count = 0;
+                // Count number of movements
                 while (shortestPath.getPrevious() != null) {
-                    count++;
                     shortestPath = shortestPath.getPrevious();
+                    count++;
                 }
-                count++; // Count the last movement
-                System.out.println("It took '" + count + "' moves!");
+                System.out.println("It took '" + count + "' moves for the crab to find the exit!");
                 System.out.println("\n");
             } catch (IOException e) {
                 System.out.println("file not found.");

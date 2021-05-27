@@ -7,7 +7,6 @@ import java.util.*;
 public class CrabPathAlgorithm {
     public static Graph findShortestPath() {
         TableSize tableSize = TableValues.size;
-        boolean[][] table = TableValues.table;
         Position crabPosition = TableValues.crabPosition;
         Position exitPosition = TableValues.exitPosition;
 
@@ -21,23 +20,20 @@ public class CrabPathAlgorithm {
             Graph graph = queue.poll();
 
             // Search in each direction once
-            // In case of up-left-right-down, it searchs two times
+            // In case of up-left-right-down, it makes two movements instead of one (see
+            // Diego Noble's PDF)
             for (DirectionValuesEnum directionValue : DirectionValuesEnum.values()) {
                 Direction dir = new Direction(directionValue);
 
                 int nextX = graph.getPosition().getDirX() + dir.getPosition().getDirX();
                 int nextY = graph.getPosition().getDirY() + dir.getPosition().getDirY();
+                Position nextPosition = new Position(nextX, nextY);
 
-                if (nextX >= tableSize.getWidth() || nextY >= tableSize.getHeight() || nextX < 0 || nextY < 0) {
+                if (crabCantGoHere(nextPosition)) {
                     continue;
                 }
 
-                // Crab cant go here!
-                if (table[nextX][nextY]) {
-                    continue;
-                }
-
-                Graph nextGraph = new Graph(new Position(nextX, nextY), graph);
+                Graph nextGraph = new Graph(nextPosition, graph);
 
                 if (nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
                     return nextGraph;
@@ -47,12 +43,13 @@ public class CrabPathAlgorithm {
                 if (dir.getMovementTimes() == 2) {
                     nextX += dir.getPosition().getDirX();
                     nextY += dir.getPosition().getDirY();
+                    nextPosition = new Position(nextX, nextY);
 
-                    nextGraph = new Graph(new Position(nextX, nextY), graph);
-
-                    if (nextX >= tableSize.getWidth() || nextY >= tableSize.getHeight() || nextX < 0 || nextY < 0) {
+                    if (crabCantGoHere(nextPosition)) {
                         continue;
                     }
+
+                    nextGraph = new Graph(nextPosition, graph);
 
                     if (nextX == exitPosition.getDirX() && nextY == exitPosition.getDirY()) {
                         return nextGraph;
@@ -68,5 +65,18 @@ public class CrabPathAlgorithm {
         }
 
         return null;
+    }
+
+    private static boolean crabCantGoHere(Position position) {
+        return isOutOfBounds(position) || isBlockedPath(position);
+    }
+
+    private static boolean isOutOfBounds(Position position) {
+        return (position.getDirX() >= TableValues.size.getWidth() || position.getDirY() >= TableValues.size.getHeight()
+                || position.getDirX() < 0 || position.getDirY() < 0);
+    }
+
+    private static boolean isBlockedPath(Position position) {
+        return TableValues.table[position.getDirX()][position.getDirY()];
     }
 }
