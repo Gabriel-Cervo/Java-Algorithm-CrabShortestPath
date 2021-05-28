@@ -55,5 +55,4 @@ public class Direction {
     public int getMovementTimes() {
         return movementTimes;
     }
-
 }
